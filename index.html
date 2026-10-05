@@ -113,7 +113,7 @@ h2{font-weight:700;font-size:20px;line-height:1.3;margin:0}
 .stat{display:block;background:var(--t3-wash);border-radius:14px;padding:14px 16px;transition:transform 200ms ease,box-shadow 200ms ease,background 200ms ease;position:relative}
 .stat:hover{transform:translateY(-3px);box-shadow:var(--shadow);background:var(--t3-surface)}
 .stat b{font-size:28px;font-weight:700;display:block;line-height:1.15;font-variant-numeric:tabular-nums}
-.stat span{font-size:13px;color:var(--t3-ink-2)}
+.stat > span{font-size:13px;color:var(--t3-ink-2)}
 .stat i.go{position:absolute;right:14px;top:14px;font-style:normal;color:var(--t3-ink-3);transition:transform 200ms ease,color 200ms ease}
 .stat:hover i.go{transform:translate(2px,-2px);color:var(--t3-navy)}
 .hero .legend{margin-top:18px}
@@ -236,9 +236,71 @@ td.n{width:44px;color:var(--t3-ink-3);font-variant-numeric:tabular-nums}
   background:var(--t3-black);color:#fff;border-radius:14px;padding:12px 18px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity 200ms ease,transform 200ms ease;max-width:calc(100vw - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+/* ---------- scroll progress + phone section tabs ---------- */
+.progress{height:2px;background:transparent}
+.progress i{display:block;height:100%;width:100%;background:var(--t3-black);transform:scaleX(0);transform-origin:left}
+.tabs{display:none}
+
+/* ---------- entrance + reveal motion ---------- */
+.rise{animation:rise 700ms cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#wheel{animation:spin-in 1000ms cubic-bezier(.2,.8,.2,1) both}
+@keyframes spin-in{from{transform:rotate(-24deg) scale(.92)}to{transform:none}}
+.wheel-hub{transition:transform 300ms ease}
+#wheel:hover .wheel-hub{transform:scale(1.06)}
+.wheel-hub{transform-box:fill-box;transform-origin:center}
+/* sections slide up as they scroll into view, where the browser supports scroll-linked animation;
+   elsewhere they simply show, so nothing is ever hidden at rest */
+@supports (animation-timeline: view()){
+  .reveal{animation:reveal linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+  @keyframes reveal{from{opacity:.15;transform:translateY(36px)}to{opacity:1;transform:none}}
+}
+
+/* cross-highlight: pointing at an area lights up its checks in the grid */
+.grid100 .sq{transition:transform 150ms ease,box-shadow 150ms ease,opacity 200ms ease}
+.grid100.focus .sq{opacity:.18}
+.grid100.focus .sq.hl{opacity:1;transform:scale(1.08)}
+.wedge.hl .bar-w{transform:scale(1.05)}
+
+/* stat tiles: shine sweep on hover */
+.stat{overflow:hidden}
+.stat::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%);
+  transform:translateX(-120%);transition:transform 700ms ease;pointer-events:none}
+.stat:hover::after{transform:translateX(120%)}
+
+/* checklist area headers stay visible while reading their table */
+.area-head{position:sticky;top:calc(var(--nav-h) + 3px);z-index:2;background:var(--t3-surface);padding-block:8px;margin-block:-8px 2px}
+
+/* quote: gentle lift */
+.quote{transition:transform 300ms ease,box-shadow 300ms ease}
+.quote:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.22)}
+
+/* wheel area list, shown on phones where wheel labels would be too small */
+.wheel-list{display:none}
+
+/* tap panel for touch screens */
+.peek{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--t3-surface);
+  border-radius:18px;box-shadow:0 -6px 40px rgba(0,0,0,.22);padding:18px;display:grid;gap:14px;animation:peek-in 260ms cubic-bezier(.2,.8,.2,1)}
+.peek[hidden]{display:none}
+@keyframes peek-in{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.peek-body{font-size:14.5px;line-height:1.5}
+.peek-body b{display:block;font-size:15px}
+.peek-body .k{display:flex;align-items:center;gap:6px;color:var(--t3-ink-2);font-size:13px;margin-top:6px}
+.peek-body .h{display:block;color:var(--t3-ink-2);font-size:13px;margin-top:6px}
+.peek-actions{display:flex;gap:10px}
+.peek-actions .t3-btn{flex:1;justify-content:center}
+
 /* ---------- responsive ---------- */
 @media (max-width:900px){
   .nav-links{display:none}
+  :root{--tabs-h:44px}
+  html{scroll-padding-top:calc(var(--nav-h) + var(--tabs-h) + 12px)}
+  .attn-group,.area{scroll-margin-top:calc(var(--nav-h) + var(--tabs-h) + 12px)}
+  .area-head{top:calc(var(--nav-h) + var(--tabs-h) + 3px)}
+  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:0 12px 8px;height:var(--tabs-h);align-items:center}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs a{flex:none;font-size:13px;font-weight:600;color:var(--t3-ink-2);padding:7px 13px;border-radius:20px;transition:background 200ms ease,color 200ms ease}
+  .tabs a.active{background:var(--t3-black);color:#fff}
   .nav-in .t3-btn{margin-left:auto}
   .hero,.results{grid-template-columns:1fr}
   .attn{grid-template-columns:1fr}
@@ -254,6 +316,50 @@ td.n{width:44px;color:var(--t3-ink-3);font-variant-numeric:tabular-nums}
   .quote{padding:20px}
   .quote p{font-size:16px}
   .na-note{margin-top:-40px}
+  :root{--nav-h:60px}
+  .nav-in{padding-inline:14px;gap:12px}
+  .nav-brand img{height:26px}
+  .nav-brand span{font-size:12.5px}
+  h1{font-size:32px}
+  .hero p.summary{font-size:15px}
+  .stat b{font-size:24px}
+  .sec-head .legend{margin-left:0}
+  .sec-head{gap:8px 14px}
+  /* wheel: drop the tiny labels, list the areas underneath instead */
+  #wheel .wedge text{display:none}
+  #wheel{max-width:300px;margin:0 auto}
+  .wheel-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}
+  .wheel-list a{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:8px 10px;border-radius:10px;background:var(--t3-wash);min-width:0}
+  .wheel-list a span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wheel-list a b{font-variant-numeric:tabular-nums}
+  .grid100{gap:4px}
+  .miss a{padding:10px 6px}
+  /* checklist tables become cards */
+  .tbl{border:none;overflow:visible}
+  table{min-width:0}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:auto}
+  tbody{display:grid;gap:8px}
+  tr{border:1px solid var(--t3-line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:start}
+  tr[hidden]{display:none}
+  td{padding:0;border:none}
+  td.n{width:auto;grid-row:1}
+  td:nth-child(2){grid-column:2;grid-row:1;font-size:14px}
+  td.st{width:auto;grid-column:3;grid-row:1}
+  td.cm{width:auto;grid-column:2 / 4;font-size:13px}
+  td.cm:empty{display:none}
+  tbody tr:hover td{background:transparent}
+  tr.flash{animation:flash 2s ease}
+  .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px}
+  .filters::-webkit-scrollbar{display:none}
+  .chip-btn{flex:none}
+  .foot{flex-direction:column;align-items:flex-start}
+  .foot > div:last-child{justify-items:start!important}
+  .top-btn{right:14px;width:42px;height:42px}
+}
+@media (hover:none){
+  .stat:hover,.attn-group li a:hover,.quote:hover,.t3-btn--primary:hover{transform:none;box-shadow:none}
+  .stat::after{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -280,18 +386,26 @@ td.n{width:44px;color:var(--t3-ink-3);font-variant-numeric:tabular-nums}
       Download PDF
     </button>
   </div>
+  <div class="tabs" aria-label="Sections">
+    <a href="#overview" data-spy="overview">Overview</a>
+    <a href="#results" data-spy="results">Check results</a>
+    <a href="#scores" data-spy="scores">Scores</a>
+    <a href="#attention" data-spy="attention">Needs attention</a>
+    <a href="#checklist" data-spy="checklist">Checklist</a>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
 </nav>
 
 <div class="wrap">
   <main class="sheet">
 
     <section class="hero" id="overview" aria-label="Overall result">
-      <svg id="wheel" viewBox="-80 -10 560 420" role="img" aria-label="Score by area. Select an area to see its checklist."></svg>
+      <div class="wheel-box"><svg id="wheel" viewBox="-80 -10 560 420" role="img" aria-label="Score by area. Select an area to see its checklist."></svg><div class="wheel-list" id="wheel-list"></div></div>
       <div>
-        <div class="eyebrow">Mystery audit · Overall result</div>
-        <h1>True Palate</h1>
-        <p class="summary" id="summary"></p>
-        <div class="meta-line">Revised audit sheet 3.2 · Ref. 2609 · Prepared by HTI</div>
+        <div class="eyebrow rise">Mystery audit · Overall result</div>
+        <h1 class="rise" style="--d:80ms">True Palate</h1>
+        <p class="summary rise" style="--d:160ms" id="summary"></p>
+        <div class="meta-line rise" style="--d:220ms">Revised audit sheet 3.2 · Ref. 2609 · Prepared by HTI</div>
         <div class="stats" id="stats"></div>
         <div class="legend"><span><i class="dot band lo"></i>75% and below</span><span><i class="dot band mid"></i>76–94%</span><span><i class="dot band hi"></i>95% and above</span></div>
       </div>
@@ -300,7 +414,7 @@ td.n{width:44px;color:var(--t3-ink-3);font-variant-numeric:tabular-nums}
     <section class="results" id="results">
       <div>
         <div class="sub-head"><h2>Every check</h2><span>100 squares, one per check</span></div>
-        <p class="how">Each square is one check, in the order of the sheet. Point at a square to read it, select it to open it in the checklist.</p>
+        <p class="how">Each square is one check, in the order of the sheet. Point at or tap a square to read it, then open it in the checklist.</p>
         <div class="grid100" id="grid100"></div>
         <div class="legend" id="grid-legend"></div>
       </div>
@@ -345,6 +459,13 @@ td.n{width:44px;color:var(--t3-ink-3);font-variant-numeric:tabular-nums}
 </div>
 
 <div class="tip" id="tip" role="tooltip"></div>
+<div class="peek" id="peek" role="dialog" aria-label="Check details" hidden>
+  <div class="peek-body" id="peek-body"></div>
+  <div class="peek-actions">
+    <button class="t3-btn" type="button" id="peek-close">Close</button>
+    <a class="t3-btn t3-btn--primary" id="peek-go" href="#">Open in checklist</a>
+  </div>
+</div>
 <button class="top-btn" id="top-btn" type="button" aria-label="Back to top">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V6m0 0l-6 6m6-6l6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
@@ -720,7 +841,7 @@ const checkTip = (area, i, [q, s, c]) =>
 $("summary").textContent = SUMMARY;
 const STAT_LINKS = [["#scores", ""], ["#scores", ""], ["#checklist", "Y"], ["#attention", ""]];
 $("stats").innerHTML = STATS.map(([b, l], i) =>
-  `<a class="stat" href="${STAT_LINKS[i][0]}"${STAT_LINKS[i][1] ? ` data-filter="${STAT_LINKS[i][1]}"` : ""}><b>${b}</b><span>${l}</span><i class="go" aria-hidden="true">→</i></a>`).join("");
+  `<a class="stat rise" style="--d:${280 + i * 70}ms" href="${STAT_LINKS[i][0]}"${STAT_LINKS[i][1] ? ` data-filter="${STAT_LINKS[i][1]}"` : ""}><b>${b}</b><span>${l}</span><i class="go" aria-hidden="true">→</i></a>`).join("");
 
 (() => {
   const cx = 200, cy = 200, R0 = 52, R1 = 140, n = scored.length, g = [];
@@ -732,19 +853,21 @@ $("stats").innerHTML = STATS.map(([b, l], i) =>
     const mid = (a0 + a1) / 2, [lx, ly] = pt(R1 + 14, mid), anchor = Math.cos(mid) > 0.2 ? "start" : Math.cos(mid) < -0.2 ? "end" : "middle";
     const met = a.it.length - a.miss.length;
     const tip = `<b>${esc(a.n)} · ${a.p}%</b>${met} of ${a.it.length} checks met<span class="h">Select to see this area's checklist</span>`;
-    g.push(`<a class="wedge" href="#${slug(a.n)}" data-tip="${esc(tip)}" aria-label="${esc(a.n)} ${a.p}%">
+    g.push(`<a class="wedge" href="#${slug(a.n)}" data-area="${slug(a.n)}" data-tip="${esc(tip)}" aria-label="${esc(a.n)} ${a.p}%">
       <path d="${wedge(R1)}" fill="#F1F1F1"/>
       <path class="bar-w" d="${wedge(R0 + (R1 - R0) * a.p / 100)}" fill="${COL[band(a.p)]}" style="animation-delay:${i * 45}ms"/>
       <text x="${lx}" y="${ly + 3}" text-anchor="${anchor}" font-family="Poppins,sans-serif" font-size="10" fill="#252525">${esc(shortName(a.n))} <tspan font-weight="700">${a.p}%</tspan></text></a>`);
   });
-  g.push(`<circle cx="${cx}" cy="${cy}" r="${R0 - 4}" fill="#000"/><text x="${cx}" y="${cy + 9}" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="26" fill="#fff">${overall}%</text>`);
+  g.push(`<g class="wheel-hub"><circle cx="${cx}" cy="${cy}" r="${R0 - 4}" fill="#000"/><text x="${cx}" y="${cy + 9}" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="26" fill="#fff"><tspan data-count="${overall}">${overall}</tspan>%</text></g>`);
   $("wheel").innerHTML = g.join("");
+  $("wheel-list").innerHTML = scored.map(a =>
+    `<a href="#${slug(a.n)}" data-area="${slug(a.n)}"><i class="dot band ${band(a.p)}"></i><span>${esc(shortName(a.n))}</span><b>${a.p}%</b></a>`).join("");
 })();
 
 // every check
 let k = 0;
 $("grid100").innerHTML = AREAS.map(([area, items]) => items.map((it, i) =>
-  `<a class="sq ${it[1]}" href="#${rowId(area, i)}" data-s="${it[1]}" data-tip="${esc(checkTip(area, i, it))}" aria-label="${esc(area)} check ${i + 1}: ${LABEL[it[1]]}" style="animation-delay:${(k++) * 6}ms"></a>`).join("")).join("");
+  `<a class="sq ${it[1]}" href="#${rowId(area, i)}" data-s="${it[1]}" data-sq-area="${slug(area)}" data-tip="${esc(checkTip(area, i, it))}" aria-label="${esc(area)} check ${i + 1}: ${LABEL[it[1]]}" style="animation-delay:${(k++) * 6}ms"></a>`).join("")).join("");
 $("grid-legend").innerHTML = [["Y", "Yes"], ["N", "No"], ["NA", "NA"]].map(([s, l]) =>
   `<button type="button" data-s="${s}" aria-pressed="false"><i class="dot sq-${s}"></i>${l} ${count(s)}</button>`).join("");
 $("grid-legend").addEventListener("click", e => {
@@ -758,8 +881,13 @@ $("grid-legend").addEventListener("click", e => {
 
 $("miss-note").textContent = `${count("N")} in ${missedAreas.length} areas`;
 $("miss").innerHTML = missedAreas.map(a =>
-  `<a href="#attn-${slug(a.n)}"><span>${esc(a.n)}</span><span class="t">${a.miss.map(() => "<i></i>").join("")}</span><b>${a.miss.length}</b>${ARROW}</a>`).join("");
+  `<a href="#attn-${slug(a.n)}" data-area="${slug(a.n)}"><span>${esc(a.n)}</span><span class="t">${a.miss.map(() => "<i></i>").join("")}</span><b>${a.miss.length}</b>${ARROW}</a>`).join("");
 $("quote-text").textContent = FOOD_NOTE;
+$("stats").querySelectorAll("b").forEach(b => {
+  const m = b.textContent.match(/^(\d+)(.*)$/); if (!m) return;
+  b.innerHTML = `<span data-count="${m[1]}">${m[1]}</span>${esc(m[2])}`;
+});
+document.querySelectorAll(".results, .quote, #scores, #attention, #checklist").forEach(el => el.classList.add("reveal"));
 
 // scores
 $("score-list").innerHTML = scored.map((a, i) =>
@@ -895,6 +1023,54 @@ if (!STANDALONE) (async () => {
   try { downloads = window.claude && await window.claude.use("downloads"); } catch (e) { downloads = null; }
   if (!downloads) { dlBtns.forEach(b => { b.disabled = true; b.title = "Downloading isn't available in this view."; }); note("Downloading isn't available in this view.", true); }
 })();
+
+// ---------- motion and touch ----------
+// numbers count up from zero once, on load
+if (!reduceMotion) document.querySelectorAll("[data-count]").forEach(el => {
+  const end = +el.dataset.count, t0 = performance.now(), dur = 1100;
+  const step = t => { const p = Math.min(1, (t - t0) / dur); el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+});
+
+// scroll progress line under the top bar
+const bar = $("progress");
+const onScroll = () => { const h = document.documentElement.scrollHeight - innerHeight; bar.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`; };
+addEventListener("scroll", () => requestAnimationFrame(onScroll), { passive: true }); onScroll();
+
+// pointing at an area (wheel, area list, missed list) lights up its checks in the grid
+const grid = $("grid100");
+const lightArea = area => {
+  grid.classList.toggle("focus", !!area);
+  grid.querySelectorAll(".sq").forEach(sq => sq.classList.toggle("hl", sq.dataset.sqArea === area));
+  document.querySelectorAll("#wheel .wedge").forEach(w => w.classList.toggle("hl", w.dataset.area === area));
+};
+document.addEventListener("pointerover", e => { const el = e.target.closest("[data-area]"); if (el && e.pointerType === "mouse") lightArea(el.dataset.area); });
+document.addEventListener("pointerout", e => { const el = e.target.closest("[data-area]"); if (el && !el.contains(e.relatedTarget)) lightArea(null); });
+
+// keep the active phone tab in view
+const tabs = document.querySelector(".tabs");
+new MutationObserver(() => { const a = tabs.querySelector(".active"); if (a && tabs.offsetParent) tabs.scrollTo({ left: a.offsetLeft - 12, behavior: reduceMotion ? "auto" : "smooth" }); })
+  .observe(tabs, { subtree: true, attributes: true, attributeFilter: ["class"] });
+
+// touch screens: the first tap on a square or wedge shows its details; "Open in checklist" goes there
+const peek = $("peek");
+let lastPointer = "mouse";
+document.addEventListener("pointerdown", e => { lastPointer = e.pointerType; }, { capture: true });
+const closePeek = () => { peek.hidden = true; };
+$("peek-close").addEventListener("click", closePeek);
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-tip]");
+  if (!el || lastPointer === "mouse" || el.closest(".peek")) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  $("peek-body").innerHTML = el.getAttribute("data-tip");
+  const href = el.getAttribute("href");
+  $("peek-go").setAttribute("href", href);
+  $("peek-go").textContent = href.startsWith("#c-") ? "Open in checklist" : "See this area";
+  peek.hidden = false; hideTip();
+  if (el.dataset.area || el.dataset.sqArea) lightArea(el.dataset.area || el.dataset.sqArea);
+}, { capture: true });
+$("peek-go").addEventListener("click", () => { closePeek(); lightArea(null); });
+addEventListener("scroll", () => { if (!peek.hidden && Math.abs(scrollY - (peek._y ?? scrollY)) > 240) closePeek(); peek._y = peek.hidden ? undefined : (peek._y ?? scrollY); }, { passive: true });
 
 </script>
 
